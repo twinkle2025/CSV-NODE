@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Bastion® by JVBastion">
+  {{ newrelic() }}
+  <title>Bastion</title>
+  {{ mixStyle('/assets/vendor') }}
+  {{ mixStyle('/assets/app') }}
+  <link rel="apple-touch-icon" sizes="57x57" href="{{ mix('/assets/images/apple-icon-57x57.png') }}">
+  <link rel="apple-touch-icon" sizes="60x60" href="{{ mix('/assets/images/apple-icon-60x60.png') }}">
+  <link rel="apple-touch-icon" sizes="72x72" href="{{ mix('/assets/images/apple-icon-72x72.png') }}">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ mix('/assets/images/apple-icon-76x76.png') }}">
+  <link rel="apple-touch-icon" sizes="114x114" href="{{ mix('/assets/images/apple-icon-114x114.png') }}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ mix('/assets/images/apple-icon-120x120.png') }}">
+  <link rel="apple-touch-icon" sizes="144x144" href="{{ mix('/assets/images/apple-icon-144x144.png') }}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ mix('/assets/images/apple-icon-152x152.png') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ mix('/assets/images/apple-icon-180x180.png') }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ mix('/assets/images/android-icon-192x192.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ mix('/assets/images/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ mix('/assets/images/favicon-96x96.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ mix('/assets/images/favicon-16x16.png') }}">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="{{ mix('/assets/images/ms-icon-144x144.png') }}">
+  <meta name="theme-color" content="#273246">
+</head>
+
+<body>
+  <div id="app">
+    <div class="page-header page-header-dark">
+      <div class="navbar navbar-expand-md navbar-dark border-transparent">
+        <div class="navbar-brand wmin-0 mr-5">
+          <a :href="window.location.href" class="d-inline-block">
+            <img src="{{ mix('/assets/images/logo-light.png') }}" />
+          </a>
+        </div>
+        <div class="d-md-none">
+          <span class="mr-3"><i :class="(!socketState) ? 'fas fa-wifi text-danger' : 'fas fa-wifi text-success'"></i></span>
+          <i :class="'mr-3 d-inline-block logo-elasticsearch ' + elasticState" style="position:relative; top:2px;"></i>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-mobile">
+            <i class="icon-tree5"></i>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-mobile">
+          <ul class="navbar-nav ml-md-auto">
+            <li class="nav-item d-none d-sm-inline" data-toggle="tooltip" data-placement="bottom" title="Websocket Status">
+              <a class="navbar-nav-link">
+                <i :class="(!socketState) ? 'fas fa-wifi text-danger' : 'fas fa-wifi text-success'"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-sm-inline" data-toggle="tooltip" data-placement="bottom" title="Elasticsearch Cluster Status">
+              <a class="navbar-nav-link">
+                <i :class="'d-inline-block logo-elasticsearch ' + elasticState" style="position:relative; top:2px;"></i>
+              </a>
+            </li>
+            <li class="nav-item hide-before-loaded d-inline" data-toggle="tooltip" data-placement="bottom" title="CPU Utilization">
+              <a class="navbar-nav-link">
+                <i class="icon-chip mr-1" style="position:relative; bottom: 1px;"></i><span class="d-inline-block text-center" style="min-width: 50px;">@{{cpuUsage}}%</span><span class="d-md-none ml-2">CPU Usage</span>
+              </a>
+            </li>
+            <li class="nav-item hide-before-loaded d-inline" data-toggle="tooltip" data-placement="bottom" title="Memory Utilization">
+              <a class="navbar-nav-link">
+                <i class="fas fa-microchip mr-1"></i><span class="d-inline-block text-center" style="min-width: 50px;">@{{memoryUsage}}%</span><span class="d-md-none ml-2">Memory
+                  Usage</span>
+              </a>
+            </li>
+            <li class="nav-item hide-before-loaded d-inline" data-toggle="tooltip" data-placement="bottom" title="HDD Utilization">
+              <a class="navbar-nav-link">
+                <i class="fas fa-hdd mr-1"></i><span class="d-inline-block text-center" style="min-width: 50px;">@{{driveUsage}}%</span><span class="d-md-none ml-2">HDD
+                  Usage</span>
+              </a>
+            </li>
+            <li class="nav-item dropdown dropdown-user">
+              <a :href="window.location.href" class="navbar-nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown">
+                <span>{{ auth.user.username }}</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a :href="window.location.href" @click="logout()" class="dropdown-item"><i class="icon-switch2"></i> Logout</a>
+                <a :href="window.location.href" @click="lock()" class="dropdown-item"><i class="icon-lock2"></i> Lock</a>
+                <a :href="window.location.href" v-if="showNotificationRequest" @click="requestNotificationPermission()"
+                  class="dropdown-item"><i class="icon-bubble-notification"></i> Activate Notifications</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="breadcrumb-line header-elements-md-inline d-none">
+        <div class="d-flex">
+          <div class="breadcrumb">
+            <router-link v-for="(crumb, index) in $route.meta.breadcrumbs" :to="crumb.to" :key="index"
+              class="breadcrumb-item">@{{crumb.display}}</router-link>
+            <span class="breadcrumb-item active">@{{$route.meta.title}}</span>
+          </div>
+
+          <a :href="window.location.href" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+        </div>
+
+        <div class="header-elements d-none uploads-tracker">
+          <div class="breadcrumb justify-content-center" v-if="Object.keys(uploads).length > 0">
+            <!--<a :href="window.location.href" class="breadcrumb-elements-item">
+                  <i class="icon-comment-discussion mr-2"></i>
+                  Support
+                </a>-->
+
+            <div class="breadcrumb-elements-item dropdown p-0">
+              <a :href="window.location.href" class="breadcrumb-elements-item dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-file-upload mr-2"></i>
+                Current Uploads
+              </a>
+
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" v-for="(fileInfo, uploadId, index) in uploads" :key="index">@{{fileInfo.name}}
+                  @{{getFilePercentage(fileInfo)}}%</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar navbar-expand-md navbar-dark border-top-0">
+      <div class="d-md-none w-100">
+        <button type="button" class="navbar-toggler d-flex align-items-center w-100" data-toggle="collapse"
+          data-target="#navbar-navigation">
+          <i class="icon-menu-open mr-2"></i>
+          Main navigation
+        </button>
+      </div>
+
+      <div class="navbar-collapse collapse" id="navbar-navigation">
+        <ul class="navbar-nav navbar-nav-highlight">
+          <li class="nav-item">
+            <router-link to="/" class="navbar-nav-link" active-class="active" exact>
+              <i class="icon-home4 mr-2"></i>
+              Dashboard
+            </router-link>
+          </li>
+          
+          <li class="nav-item dropdown">
+						<a :href="window.location.href" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<i class="icon-database-insert mr-2"></i>
+							Collection
+						</a>
+						<div class="dropdown-menu">
+                <div class="dropdown-header">Lists</div>
+                <div class="dropdown-submenu">
+                  <a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="icon-file-upload text-primary"></i> Import Lists</a>
+                  <div class="dropdown-menu">
+                      <router-link to="/lists/upload" active-class="active" class="dropdown-item" exact>
+                        <i class="icon-file-plus"></i>
+                        Upload a List
+                      </router-link>
+                      <router-link to="/lists/upload/experimental" active-class="active" class="dropdown-item">
+                        <i class="fas fa-flask"></i>
+                        Experimental List Uploader
+                      </router-link>
+                      <router-link to="/transfer-from/google-drive" active-class="active" class="dropdown-item">
+                        <i class="fab fa-google-drive"></i>
+                        Transfer from Google Drive
+                      </router-link>
+                  </div>
+                </div>
+                <router-link to="/lists/uploaded" active-class="active" class="dropdown-item">
+                  <i class="icon-file-upload text-success"></i>
+                  Uploaded Lists
+                </router-link>
+                <div class="dropdown-submenu">
+                  <a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="icon-wave2"></i> Jobs</a>
+                  <div class="dropdown-menu">
+                      <router-link to="/transfer-from/jobs" active-class="active" class="dropdown-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        Processing Transfers
+                      </router-link>
+                      <router-link to="/lists/processing" active-class="active" class="dropdown-item">
+                        <i class="icon-file-eye"></i>
+                        Processing Jobs
+                      </router-link>
+                      <router-link to="/lists/finished" active-class="active" class="dropdown-item">
+                        <i class="icon-file-check text-success"></i>
+                        Finished Jobs
+                      </router-link>
+                  </div>
+                </div>
+                <div class="dropdown-header">Direct</div>
+                <div class="dropdown-submenu">
+                    <a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="icon-enter6"></i> Capture Endpoints</a>
+                    <div class="dropdown-menu">
+                        <router-link to="/capture/endpoints/generic" active-class="active" class="dropdown-item">
+                          <i class="icon-drawer-in"></i>
+                          Generic Capture Endpoints
+                        </router-link>
+                        <router-link to="/capture/endpoints/leadpages" active-class="active" class="dropdown-item">
+                          <i class="logo-leadpages"></i>
+                          LeadPages Capture Endpoints
+                        </router-link>
+                    </div>
+                  </div>
+						</div>
+          </li>
+          <!--<li class="nav-item dropdown">
+						<a :href="window.location.href" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<i class="icon-user-plus mr-2"></i>
+							Enrichment
+						</a>
+						<div class="dropdown-menu">
+                <div class="dropdown-header">Phone Enrichment</div>
+                <router-link to="/enrichment/phone/whatsapp" active-class="active" class="dropdown-item">
+                  <i class="fab fa-whatsapp text-success"></i>
+                  Whatsapp Details
+                </router-link>
+                <router-link to="/enrichment/phone/reachability" active-class="active" class="dropdown-item">
+                  <i class="fas fa-phone text-success"></i>
+                  Phone Reachability
+                </router-link>
+                <router-link to="/enrichment/phone/hlr/upload" active-class="active" class="dropdown-item">
+                  <i class="fas fa-file-upload"></i>
+                  HLR Report Processor
+                </router-link>
+                <div class="dropdown-header">Email Enrichment</div>
+                <router-link to="/enrichment/email/domain-dns" active-class="active" class="dropdown-item">
+                  <i class="fas fa-at"></i>
+                  Domain MX Validation
+                </router-link>
+                <router-link to="/enrichment/email/ping" active-class="active" class="dropdown-item">
+                  <i class="fas fa-table-tennis"></i>
+                  Email Ping
+                </router-link>
+                <div class="dropdown-header">General Enrichment</div>
+                <router-link to="/enrichment/general/exists" active-class="active" class="dropdown-item">
+                  <i class="icon-database-check"></i>
+                  Lead Accounts
+                </router-link>
+						</div>
+          </li>-->
+          <li class="nav-item dropdown">
+						<a :href="window.location.href" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<i class="icon-database-export mr-2"></i>
+							Exporting
+						</a>
+						<div class="dropdown-menu">
+              <router-link to="/leads/list" active-class="active" class="dropdown-item">
+                <i class="fas fa-users"></i>
+                View Leads
+              </router-link>
+              <div class="dropdown-submenu">
+                <a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="fas fa-hat-wizard"></i> Export Wizards</a>
+                <div class="dropdown-menu">
+                  <router-link to="/leads/export" active-class="active" class="dropdown-item">
+                    <i class="icon-file-excel"></i>
+                    Export to File
+                  </router-link>
+                  <router-link to="/leads/api-export" active-class="active" class="dropdown-item">
+                    <i class="icon-database-upload"></i>
+                    Export to API
+                  </router-link>
+                </div>
+              </div>
+              <router-link to="/leads/exports" active-class="active" class="dropdown-item">
+                <i class="icon-database-export"></i>
+                Export Jobs
+              </router-link>
+              <div class="dropdown-header">Configuration</div>
+              <router-link to="/export/apis" active-class="active" class="dropdown-item">
+                <i class="icon-cogs"></i>
+                Export APIs
+              </router-link>
+              <router-link to="/export/templates" active-class="active" class="dropdown-item">
+                <i class="fas icon-insert-template"></i>
+                Export Templates
+              </router-link>
+						</div>
+          </li>
+
+          <li class="nav-item dropdown">
+						<a :href="window.location.href" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<i class="icon-megaphone mr-2"></i>
+							Marketing
+						</a>
+
+						<div class="dropdown-menu">
+              <router-link to="/marketing/" class="dropdown-item" active-class="active" exact>
+                <i class="icon-megaphone mr-2"></i>
+                Marketing Dashboard
+              </router-link>
+							<div class="dropdown-submenu">
+								<a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="fas fa-chart-line"></i> Reports</a>
+								<div class="dropdown-menu">
+                  <router-link to="/marketing/reports/clicks" class="dropdown-item" active-class="active">
+                    <i class="icon-touch mr-2"></i>Clicks Report
+                  </router-link>
+                  <router-link to="/marketing/reports/subscriptions" class="dropdown-item" active-class="active">
+                    <i class="icon-user mr-2"></i>Subscriptions Report
+                  </router-link>
+                  <router-link to="/marketing/reports/registrations" class="dropdown-item" active-class="active">
+                    <i class="icon-user-plus mr-2"></i>Registrations Report
+                  </router-link>
+                  <!--  <router-link to="/marketing/reports/unsubscriptions" class="dropdown-item" active-class="active">
+                    <i class="icon-touch mr-2"></i>Unsubscriptions Report
+                  </router-link>
+                  <router-link to="/marketing/reports/answered-calls" class="dropdown-item" active-class="active">
+                    <i class="icon-touch mr-2"></i>Answered-Calls Report
+                  </router-link>
+                  <router-link to="/marketing/reports/unanswered-calls" class="dropdown-item" active-class="active">
+                    <i class="icon-touch mr-2"></i>Unanswered-Calls Report
+                  </router-link>  -->
+                  <router-link to="/marketing/reports/ftds" class="dropdown-item" active-class="active">
+                    <i class="icon-coin-dollar mr-2"></i>FTDs Report
+                  </router-link>
+                  <router-link to="/marketing/reports/upsales" class="dropdown-item" active-class="active">
+                    <i class="icon-coins mr-2"></i>Upsales Report
+                  </router-link>
+								</div>
+              </div>
+              <router-link to="/marketing/click/lookup" class="dropdown-item" active-class="active">
+                <i class="icon-touch mr-2"></i>Click Lookup
+              </router-link>
+              <div class="dropdown-header">Email Marketing</div>
+              <router-link to="/marketing/email/blasts" active-class="active" class="dropdown-item">
+                <i class="fas fa-paper-plane"></i>
+                Email Blasts
+              </router-link>
+              <router-link to="/marketing/email/queue" active-class="active" class="dropdown-item">
+                <i class="fas fa-heartbeat"></i>
+                Email Queue
+              </router-link>
+              <router-link to="/marketing/email/accounts" active-class="active" class="dropdown-item">
+                <i class="icon-cogs"></i>
+                SMTP Accounts
+              </router-link>
+              <router-link to="/marketing/email/proxies" active-class="active" class="dropdown-item">
+                <i class="icon-shield-check"></i>
+                Proxies
+              </router-link>
+              <div class="dropdown-header">SMS Marketing</div>
+              <router-link to="/marketing/sms/send" active-class="active" class="dropdown-item">
+                <i class="icon-bubble"></i>
+                Send SMS Blast
+              </router-link>
+              <router-link to="/marketing/sms/providers" active-class="active" class="dropdown-item">
+                <i class="icon-cogs"></i>
+                SMS Providers
+              </router-link>
+							<router-link to="/marketing/sms/twilio/endpoints" active-class="active" class="dropdown-item">
+                <i class="logo-twilio"></i>
+                Twilio Endpoints
+              </router-link>
+              <!--<div class="dropdown-header">Utilities</div>
+							<div class="dropdown-submenu">
+								<a :href="window.location.href" class="dropdown-item dropdown-toggle"><i class="logo-tune"></i> HasOffers</a>
+								<div class="dropdown-menu">
+                  <router-link to="/marketing/utilities/hasoffers/upload-click-report" class="dropdown-item" active-class="active" exact>
+                    <i class="icon-file-spreadsheet2 mr-2"></i>
+                    Upload HasOffers Click Reports
+                  </router-link>
+								</div>
+							</div>-->
+						</div>
+					</li>
+        </ul>
+      </div>
+    </div>
+    <div class="page-content">
+      <router-view class="content-wrapper" :key="$route.fullPath"></router-view>
+    </div>
+    <vue-progress-bar></vue-progress-bar>
+    <vue-headful :title="this.pageTitle" />
+  </div>
+  <footer class="navbar navbar-expand-lg navbar-light" id="footer">
+    <div class="text-center d-lg-none w-100">
+      <button type="button" class="navbar-toggler dropdown-toggle" data-toggle="collapse" data-target="#navbar-footer">
+        <i class="icon-unfold mr-2"></i>
+        {{version()}}
+      </button>
+    </div>
+
+    <div class="navbar-collapse collapse" id="navbar-footer">
+      <span class="navbar-text d-none d-lg-block">
+        {{version()}}
+      </span>
+
+      <ul class="navbar-nav ml-lg-auto">
+        <li class="nav-item"><a
+            class="navbar-nav-link" target="_blank"><i class="icon-lifebuoy mr-2"></i> Support</a></li>
+        <li class="nav-item"><a href="/privacy-policy/" class="navbar-nav-link" target="_blank"><i
+              class="fas fa-user-shield mr-2"></i> Privacy Policy</a></li>
+      </ul>
+    </div>
+  </footer>
+  {{ mixScript('/assets/manifest') }}
+  {{ mixScript('/assets/vendor') }}
+  {{ mixScript('/assets/app') }}
+</body>
+
+</html>

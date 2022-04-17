@@ -1,0 +1,28 @@
+# Node modules
+node_modules
+
+# Adonis directory for storing tmp files
+tmp
+
+# Environment variables, never commit this file
+.env
+
+# The development sqlite file
+database/development.sqlite
+
+# VSCode & Webstorm history directories
+.history
+.idea
+public/assets
+
+# NewRelic
+newrelic.js
+newrelic_agent.log
+
+# Version
+version.txt
+
+#Visual Studio Code
+*.code-workspace
+public/service-worker.js
+.vscode

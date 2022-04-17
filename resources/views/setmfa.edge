@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Bastion® by JVBastion">
+    {{ newrelic() }}
+    <title>Setup MFA | Bastion</title>
+    {{ mixStyle('/assets/vendor') }}
+    {{ mixStyle('/assets/app') }}
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ mix('/assets/images/apple-icon-57x57.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ mix('/assets/images/apple-icon-60x60.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ mix('/assets/images/apple-icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ mix('/assets/images/apple-icon-76x76.png') }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ mix('/assets/images/apple-icon-114x114.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ mix('/assets/images/apple-icon-120x120.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ mix('/assets/images/apple-icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ mix('/assets/images/apple-icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ mix('/assets/images/apple-icon-180x180.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{{ mix('/assets/images/android-icon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ mix('/assets/images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ mix('/assets/images/favicon-96x96.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ mix('/assets/images/favicon-16x16.png') }}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{{ mix('/assets/images/ms-icon-144x144.png') }}">
+    <meta name="theme-color" content="#273246">
+</head>
+<body>
+  <div id="app">
+    <div class="navbar navbar-expand-md navbar-dark">
+      <div class="navbar-brand">
+        <a href="#" class="d-inline-block">
+            <img src="{{ mix('/assets/images/logo-light.png') }}" />
+        </a>
+      </div>
+    </div>
+    <div class="page-content">
+        <div class="content-wrapper">
+          <div class="content d-flex justify-content-center align-items-center">
+            <ajax-form class="login-form" action="/mfa/save" method="POST" @success="reloadWindow()">
+              <div class="card mb-0">
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <i class="material-icons material-icons-2x text-slate-300 border-slate-300 border-3 rounded-round p-3 mb-3 mt-1">fingerprint</i>
+                    <h5 class="mb-0">Setup Multifactor Authentication</h5>
+                    <span class="d-block text-muted">Scan the QR Code below</span>
+                    <img v-if="mfa.qrcode" :src="mfa.qrcode" class="img-fluid" />
+                  </div>
+                  <div class="text-center mb-3">
+                      <span class="d-block text-muted"><span class="d-none d-md-inline">or&nbsp;</span>copy and paste the code below</span>
+                  </div>
+                  <div class="form-group form-group-feedback form-group-feedback-left">
+                      <input type="text" v-if="mfa.secret" name="totp_secret" class="form-control" placeholder="TOTP Secret" readonly :value="mfa.secret">
+                      <div class="form-control-feedback">
+                        <i class="icon-lock2 text-muted"></i>
+                      </div>
+                    </div>
+                  <div class="text-center mb-3">
+                      <span class="d-block text-muted">Enter the TOTP code</span>
+                  </div>
+                  <div class="form-group form-group-feedback form-group-feedback-left">
+                    <input type="text" name="totp_code" class="form-control" placeholder="TOTP Code">
+                    <div class="form-control-feedback">
+                      <i class="icon-lock2 text-muted"></i>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Verify and Continue <i class="icon-circle-right2 ml-2"></i></button>
+                  </div>
+                </div>
+              </div>
+            </ajax-form>
+          </div>
+        </div>
+    </div>
+  </div>
+  <footer class="navbar navbar-expand-lg navbar-light" id="footer">
+		<div class="text-center d-lg-none w-100">
+			<button type="button" class="navbar-toggler dropdown-toggle" data-toggle="collapse" data-target="#navbar-footer">
+				<i class="icon-unfold mr-2"></i>
+				{{version()}}
+			</button>
+		</div>
+
+		<div class="navbar-collapse collapse" id="navbar-footer">
+			<span class="navbar-text d-none d-lg-block">
+				{{version()}}
+			</span>
+
+			<ul class="navbar-nav ml-lg-auto">
+        <li class="nav-item"><a href="/privacy-policy/" class="navbar-nav-link" target="_blank"><i class="fas fa-user-shield mr-2"></i> Privacy Policy</a></li>
+			</ul>
+		</div>
+	</footer>
+  {{ mixScript('/assets/manifest') }}
+  {{ mixScript('/assets/vendor') }}
+  {{ mixScript('/assets/app') }}
+</body>
+</html>

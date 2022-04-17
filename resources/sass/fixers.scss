@@ -1,0 +1,69 @@
+.page-content {
+    overflow-x: visible;
+
+    .content-wrapper {
+      overflow-x: hidden;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .alert.alert-#{$color} {
+      color: color-yiq($value);
+      background: $value;
+      background-color: $value;
+    }
+  
+    .ui-pnotify.alert.alert-#{$color} {
+        color: color-yiq($value) !important;
+  
+        .ui-pnotify-title,
+        .ui-pnotify-text {
+          color: color-yiq($value) !important;  		
+        }
+  
+        .fa,
+      .far,
+      .fas,
+      .fab {
+          color: color-yiq($value) !important;
+      }
+    }
+  
+    .border-#{$color} {
+      border-color: $value !important;
+    }
+  }
+
+.file-preview-table {
+  td, th {
+    min-width: 175px;
+  }
+}
+
+.datatable-scroll {
+  overflow-x: auto;
+}
+
+.z-index-higher {
+  z-index: 10;
+}
+
+.behind-content {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  &.graph-in-widget {
+    top: 65%;
+    bottom: -10px;
+  }
+}
+
+.hide-v-overflow {
+  overflow-y: hidden;
+}
+
+.page-content:not(.container){
+  min-height: calc(100vh - 192px - 2.5rem - 1.25rem);
+}

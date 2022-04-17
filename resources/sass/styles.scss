@@ -1,0 +1,132 @@
+// Import Variables
+@import 'variables';
+
+// Bootstrap
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
+// Icons
+@import 'material-design-icons';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/regular.scss';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/brands.scss';
+
+// Limitless
+@import '../limitless/global_assets/scss/layouts/layout_5/default/compile/bootstrap.scss';
+@import '../limitless/global_assets/scss/layouts/layout_5/default/compile/bootstrap_limitless.scss';
+@import '../limitless/global_assets/scss/layouts/layout_5/default/compile/colors.scss';
+@import '../limitless/global_assets/scss/layouts/layout_5/default/compile/components.scss';
+@import '../limitless/global_assets/scss/layouts/layout_5/default/compile/layout.scss';
+
+// PNotify
+@import 'pnotify';
+
+// Chosen
+@import 'chosen';
+
+// Fixers
+@import 'fixers';
+
+// Loader
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 51px;
+    height: 51px;
+    margin: 6px;
+    border: 6px solid $dark;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: $dark transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#app {
+    min-height: calc(100vh - 50px);
+}
+
+.logo-leadpages {
+    width: 16px;
+    height: 16px;
+    background: url(../images/leadpages.png);
+    background-size: cover;
+}
+
+.hide-before-loaded {
+    display: none !important;
+}
+
+.logo-tune {
+    width: 16px;
+    height: 16px;
+    background: url(../images/tunelogo.png);
+    background-size: cover;
+}
+
+.logo-twilio {
+    width: 16px;
+    height: 16px;
+    background: url(../images/twilio-mark-red.png);
+    background-size: cover;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.logo-elasticsearch {
+    width: 16px;
+    height: 16px;
+    background-image: url(../images/elasticsearch-white.png);
+    background-size: cover;
+
+    &.primary {
+        background-image: url(../images/elasticsearch-primary.png);
+    }
+
+    &.danger,
+    &.red {
+        background-image: url(../images/elasticsearch-danger.png);
+    }
+
+    &.warning,
+    &.yellow {
+        background-image: url(../images/elasticsearch-warning.png);
+    }
+
+    &.success,
+    &.green {
+        background-image: url(../images/elasticsearch-success.png);
+    }
+}
+
+.ui-front {
+    z-index: 2000;
+}
+
+.card.content-wrapper > .card-body {
+    flex: 0;
+}

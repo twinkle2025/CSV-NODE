@@ -1,0 +1,43 @@
+version: '2.2'
+services:
+  bastiones:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: on-failure
+    volumes:
+      - elasticsearchdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - bastionnet
+  bastiondb:
+    image: mariadb:10.2
+    environment:
+      MYSQL_ROOT_PASSWORD: bastion
+      MYSQL_DATABASE: bastion
+      MYSQL_USER: bastion
+      MYSQL_PASSWORD: bastion
+    networks:
+      - bastionnet
+    ports:
+      - 33306:3306
+    restart: on-failure
+    volumes:
+     - mariadbdata:/var/lib/mysql
+
+volumes:
+  elasticsearchdata:
+    driver: local
+  mariadbdata:
+    driver: local
+
+networks:
+  bastionnet:
